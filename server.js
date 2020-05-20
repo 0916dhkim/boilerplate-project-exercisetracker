@@ -93,6 +93,56 @@ app.post("/api/exercise/add", async function(req, res) {
   }
 });
 
+app.get("/api/exercise/log", async function(req, res) {
+  try {
+    const { userId, from, to, limit } = req.query;
+    // Check required fields.
+    if (!userId) {
+      throw new Error("Missing userId.");
+    }
+    if (from && isNaN(new Date(from)) || to && isNaN(new Date(to))) {
+      throw new Error("Invalid Date Format");
+    }
+    if (limit && isNaN(limit)) {
+      throw new Error("limit is not a number.");
+    }
+
+    const user = await ExerciseUser.findById(userId);
+    if (!user) {
+      throw new Error("Unable to find user.");
+    }
+
+    // Query exercises.
+    let query = Exercise.find({ userId: user._id });
+    if (from) {
+      query = query.where("date").gt(new Date(from));
+    }
+    if (from) {
+      query = query.where("date").lt(new Date(to));
+    }
+    if (limit) {
+      query = query.limit(Number.parseInt(limit));
+    }
+    query = query.select({
+      _id: 0,
+      description: 1,
+      duration: 1,
+      date: 1
+    });
+    const log = await query.exec();
+    res.send({
+      _id: user._id,
+      username: user.username,
+      log,
+      count: log.length
+    });
+  } catch (e) {
+    res.send({
+      error: e.message
+    });
+  }
+});
+
 
 // Not found middleware
 app.use((req, res, next) => {
