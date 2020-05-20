@@ -83,7 +83,7 @@ app.post("/api/exercise/add", async function(req, res) {
         username: user.username,
         description: x.description,
         duration: x.duration,
-        date: x.date
+        date: x.date.toDateString()
       });
     });
   } catch (e) {
