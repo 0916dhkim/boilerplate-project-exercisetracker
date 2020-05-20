@@ -11,8 +11,8 @@
 		"cors": "^2.8.1",
 		"dotenv": "^8.2.0",
 		"express": "^4.14.0",
-		"mongodb": "^2.2.14",
-		"mongoose": "^4.7.2",
+		"mongodb": "^3.5.7",
+		"mongoose": "^5.9.15",
 		"shortid": "^2.2.6"
 	},
 	"engines": {
