@@ -10,6 +10,8 @@ const mongoose = require('mongoose')
 mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track', {
   useNewUrlParser: true,
   useUnifiedTopology: true
+}).then(() => {
+  console.log("Connected to Database.");
 });
 
 // Define schema.
@@ -47,6 +49,41 @@ app.post("/api/exercise/new-user", async function(req, res) {
       res.send({
         username: u.username,
         _id: u._id
+      });
+    });
+  } catch (e) {
+    res.send({
+      error: e.message
+    });
+  }
+});
+
+app.post("/api/exercise/add", async function(req, res) {
+  try {
+    // Check required fields.
+    if (!req.body.userId || !req.body.description || !req.body.duration) {
+      throw new Error("Missing required field(s).");
+    }
+    if (isNaN(req.body.duration)) {
+      throw new Error("Duration should be a number.");
+    }
+    const user = await ExerciseUser.findById(req.body.userId);
+    if (!user) {
+      throw new Error("Unable to find user.");
+    }
+    const exercise = new Exercise({
+      userId: user._id,
+      description: req.body.description,
+      duration: Number.parseFloat(req.body.duration),
+      date: req.body.date ? new Date(req.body.date) : undefined
+    });
+    await exercise.save().then(x => {
+      res.send({
+        _id: user._id,
+        username: user.username,
+        description: x.description,
+        duration: x.duration,
+        date: x.date
       });
     });
   } catch (e) {
