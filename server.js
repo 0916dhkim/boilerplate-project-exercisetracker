@@ -7,7 +7,24 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 const mongoose = require('mongoose')
-mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
+mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+// Define schema.
+const exerciseUserSchema = new mongoose.Schema({
+  username: { type: String, required: true }
+});
+const ExerciseUser = mongoose.model("ExerciseUser", exerciseUserSchema);
+const exerciseSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  description: { type: String, required: true },
+  duration: { type: Number, required: true },
+  date: { type: Date, required: true, default: Date.now }
+});
+const Exercise = mongoose.model("Exercise", exerciseSchema);
+
 
 app.use(cors())
 
