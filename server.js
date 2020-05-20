@@ -37,6 +37,25 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+app.post("/api/exercise/new-user", async function(req, res) {
+  try {
+    if (!req.body.username) {
+      throw new Error("Username not provided.");
+    }
+    const user = new ExerciseUser({ username: req.body.username });
+    await user.save().then(u => {
+      res.send({
+        username: u.username,
+        _id: u._id
+      });
+    });
+  } catch (e) {
+    res.send({
+      error: e.message
+    });
+  }
+});
+
 
 // Not found middleware
 app.use((req, res, next) => {
