@@ -93,6 +93,17 @@ app.post("/api/exercise/add", async function(req, res) {
   }
 });
 
+app.get("/api/exercise/users", async function(req, res) {
+  try {
+    const users = await ExerciseUser.find();
+    res.send(users);
+  } catch (e) {
+    res.send({
+      error: e.message
+    });
+  }
+});
+
 app.get("/api/exercise/log", async function(req, res) {
   try {
     const { userId, from, to, limit } = req.query;
